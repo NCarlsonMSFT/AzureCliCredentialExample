@@ -1,16 +1,7 @@
 # AzureCliCredentialExample
 An example for using an [`AzureCliCredential`](https://learn.microsoft.com/en-us/dotnet/api/azure.identity.azureclicredential?view=azure-dotnet) to connect to Azure from a container.
 
-## Dependencies
-- A Blob container where you have been assigned the "Storage Blob Data Reader" role.
-
 ## Getting started
-Run
-```
-dotnet user-secrets set "blobContainerUri" "https://<StorageAccount>.blob.core.windows.net/<ContainerName>" --id dotnet-AzureCliCredentialExample-eb931c0b-bc8a-40a0-a3ca-bcacdd9c54fb
-```
-to configure the blob container to enumerate.
-
 Open [AzureCliCredentialExample.sln](AzureCliCredentialExample.sln)
 
 Once the container has started, run:

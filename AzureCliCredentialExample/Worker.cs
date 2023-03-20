@@ -1,5 +1,5 @@
 using Azure.Identity;
-using Azure.Storage.Blobs;
+using Azure.ResourceManager;
 
 namespace AzureCliCredentialExample
 {
@@ -16,17 +16,24 @@ namespace AzureCliCredentialExample
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Uri blobContainerUri = _configuration.GetValue<Uri>("blobContainerUri");
-            _logger.LogCritical($"Getting Files from {blobContainerUri}");
-
             var creds = new DefaultAzureCredential(includeInteractiveCredentials: false);
+            bool connected = false;
 
-            BlobContainerClient containerClient = new BlobContainerClient(blobContainerUri, creds);
-            var blobs = containerClient.GetBlobsAsync(Azure.Storage.Blobs.Models.BlobTraits.None);
-            int ind = 1;
-            await foreach (var blob in blobs)
+            while (!connected)
             {
-                _logger.LogCritical($"{ind++} : {blob.Name}");
+                try
+                {
+                    ArmClient client = new ArmClient(new DefaultAzureCredential());
+                    var subscriptionResource = await client.GetDefaultSubscriptionAsync();
+                    var subscription = await subscriptionResource.GetAsync();
+                    _logger.LogCritical($"Displayname: {subscription.Value.Data.DisplayName}");
+                    connected = true;
+                }
+                catch (CredentialUnavailableException ex)
+                {
+                    _logger.LogWarning("Could not authenticate");
+                    await Task.Delay(1000);
+                }
             }
         }
     }
